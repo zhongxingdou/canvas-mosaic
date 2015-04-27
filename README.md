@@ -10,8 +10,10 @@ Getting started
 </div>
 
 <script>
-new Mosaic(myCanvasWrap, 'mm2.jpeg', {
-                drawInterval: 50
+new Mosaic(document.getElementById('myCanvasWrap'), 'mm2.jpeg', {
+                drawInterval: 50,
+                size: 15, //width and height of square
+                transparent: .7
 			})
 </script>
 ```
