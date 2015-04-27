@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>马赛克示例</title>
+    <meta charset="utf-8">
+    <script src="mosaic.js" type='text/javascript'></script>
+    <style>
+    #myCanvasWrap {
+        border: 1px solid gray;
+        display: inline-block;
+        /*width: 400px;*/
+        /*height: 400px;*/
+    }
+    .activeMosaic{
+        background: blue;
+        color: white;
+    }
+    </style>
+</head>
+
+<body>
+    <p>
+        <a href="http://jsfiddle.net/pr2et79c/8/">JsFiddle</a>
+    </p>
+
+    <div id="myCanvasWrap">
+        <img src="mm2.jpeg" id="myImg" />
+    </div>
+
+    <button type="button" id="toggle">马赛克</button>
+    <button type="button" id="resetMosaic">恢复原样</button>
+    <button type='button' id='saveImage'>Save image</button>
+
+    <img src='' id='savedImage' />
+
+    <script>
+    var myCanvasWrap = document.getElementById('myCanvasWrap')
+    // var aMosaic = new Mosaic(myCanvasWrap, 'http://p7.sinaimg.cn/5498343926/180/59861427127320')
+
+    var aMosaic;
+    document.getElementById('saveImage').onclick = function() {
+        if(!aMosaic)return
+        var data = aMosaic.saveCanvas()
+        document.getElementById('savedImage').src = data
+    }
+
+    document.getElementById('resetMosaic').onclick = function() {
+        if(!aMosaic)return
+        aMosaic.reset()
+    }
+
+    document.getElementById('toggle').onclick = function() {
+        if(!aMosaic){
+            document.getElementById('myImg').style.display = 'none'
+            aMosaic = new Mosaic(myCanvasWrap, 'mm2.jpeg', {
+                drawInterval: 50
+            })
+        }else{
+            aMosaic.toggle()
+        }
+        // this.innerText = aMosaic.isEnabled() ? '关闭马赛克笔' : '开启马赛克笔'
+        this.className = aMosaic.isEnabled() ? 'activeMosaic' : ''
+    }
+
+
+    </script>
+
+</body>
+</html>
