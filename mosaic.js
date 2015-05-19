@@ -25,7 +25,7 @@ function Mosaic(wrap, image, option) {
     var canvas = option.canvas
     if (typeof image === 'string') {
         var tempImage = new Image()
-        // tempImage.setAttribute('crossOrigin', 'anonymous')
+        tempImage.setAttribute('crossOrigin', 'anonymous')
         var src = image
         tempImage.src = src
         tempImage.onload = function() {
@@ -41,7 +41,7 @@ Mosaic.prototype.reset = function() {
     var image = self.image
     if (typeof image === 'string') {
         var tempImage = new Image()
-        // tempImage.setAttribute('crossOrigin', 'anonymous')
+        tempImage.setAttribute('crossOrigin', 'anonymous')
         var src = image
         tempImage.src = src
         tempImage.onload = function() {
@@ -120,7 +120,32 @@ Mosaic.prototype.initPainting = function() {
     }
 
     var drawAble = false
+     canvas.addEventListener('touchstart', function(event){
+        event.preventDefault()
+        event.stopPropagation()
+        if (self.isEnabled()) {
+            drawAble = true
+            canvas.addEventListener('touchmove', delegateDraw)
+        }
+    })
+
+    canvas.addEventListener('touchend', function(event) {
+        event.preventDefault()
+        event.stopPropagation()
+        drawAble = false
+        canvas.removeEventListener('touchmove', delegateDraw)
+    })
+
+    canvas.addEventListener('touchcancel', function(event) {
+        event.preventDefault()
+        event.stopPropagation()
+        drawAble = false
+        canvas.removeEventListener('touchmove', delegateDraw)
+    })
+
     canvas.addEventListener('mousedown', function(event) {
+        event.preventDefault()
+        event.stopPropagation()
         if (self.isEnabled()) {
             drawAble = true
             canvas.addEventListener('mousemove', delegateDraw)
@@ -128,6 +153,8 @@ Mosaic.prototype.initPainting = function() {
     })
 
     canvas.addEventListener('mouseup', function(event) {
+        event.preventDefault()
+        event.stopPropagation()
         drawAble = false
         canvas.removeEventListener('mousemove', delegateDraw)
     })
