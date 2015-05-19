@@ -90,6 +90,30 @@ Mosaic.prototype.drawImgToCanvas = function(image) {
     this.context.drawImage(image, 0, 0)
 }
 
+
+Mosaic.getAbsPosition = function(el){
+    var el2 = el;
+    var curtop = 0;
+    var curleft = 0;
+    if (document.getElementById || document.all) {
+        do  {
+            curleft += el.offsetLeft-el.scrollLeft;
+            curtop += el.offsetTop-el.scrollTop;
+            el = el.offsetParent;
+            el2 = el2.parentNode;
+            while (el2 != el) {
+                curleft -= el2.scrollLeft;
+                curtop -= el2.scrollTop;
+                el2 = el2.parentNode;
+            }
+        } while (el.offsetParent);
+
+    } else if (document.layers) {
+        curtop += el.y;
+        curleft += el.x;
+    }
+    return {y: curtop, x:curleft};
+}
 /**
  * @param <Number> size 方块大小
  * @param <Number> interval 绘制间隔时间
@@ -103,10 +127,12 @@ Mosaic.prototype.initPainting = function() {
 
     function delegateDraw(event) {
         var size = self.option.size
-        // var x = event.clientX - canvas.clientLeft - size
-        // var y = event.clientY - canvas.clientTop - size
         var x = event.layerX
         var y = event.layerY
+        if(!x && !y){
+            x = event.touches[0].clientX - canvasPos.x
+            y = event.touches[0].clientY - canvasPos.y
+        }
         var pixel = self.context.getImageData(x, y, 1, 1).data
         var color = 'rgba(' + pixel[0] + ',' + pixel[1] +
              ',' + pixel[2] + ',' + transparent + ')';
@@ -120,7 +146,9 @@ Mosaic.prototype.initPainting = function() {
     }
 
     var drawAble = false
-     canvas.addEventListener('touchstart', function(event){
+    var canvasPos = {x:0, y:0}
+    canvas.addEventListener('touchstart', function(event){
+        canvasPos = Mosaic.getAbsPosition(canvas)
         event.preventDefault()
         event.stopPropagation()
         if (self.isEnabled()) {
@@ -137,8 +165,8 @@ Mosaic.prototype.initPainting = function() {
     })
 
     canvas.addEventListener('touchcancel', function(event) {
-        event.preventDefault()
-        event.stopPropagation()
+        //event.preventDefault()
+        //event.stopPropagation()
         drawAble = false
         canvas.removeEventListener('touchmove', delegateDraw)
     })
